@@ -117,7 +117,7 @@
   <button class="exit-fullscreen" id="exitBtn" onclick="exitFullscreen()">Exit Fullscreen (ESC)</button>
 
   <div class="container"> 
-    <h1>🔒 Berubah kocak</h1> 
+    <h1>🔒 Berubah yak</h1> 
      
 
     <button class="demo-button" onclick="safeDemo()">POC (with Fullscreen)</button> 
@@ -130,9 +130,7 @@
  
   <script> 
     function safeDemo() {
-      // Request fullscreen first
-              enterFullscreen();
-
+    
       
       // Open a new window 
       let win = window.open("https://www.google.com/", "_blank"); 
@@ -140,6 +138,7 @@
       // Attempt to write content (will be blocked by modern browsers for cross-origin) 
       setTimeout(() => { 
         try { 
+          enterFullscreen();
           win.document.write(` 
             <h1>This is not Google!</h1> 
             <p>This demonstrates browser security protections.</p>
