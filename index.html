@@ -1,75 +1,38 @@
-<html><head>
-    <meta charset="utf-8">
-    <title>cursory hack</title>
-    <style media="screen">
-      body {height:100vh}
-    </style>
-  </head>
-  <body style="margin: 0px; cursor: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAACACAYAAADDPmHLAAAAAXNSR0IArs4c6QAAAdFJREFUeF7t1AENAAAMg7DPv+kLKXMAIds12sBo+uCvAPAICqAAcAM4fg9QALgBHL8HKADcAI7fAxQAbgDH7wEKADeA4/cABYAbwPF7gALADeD4PUAB4AZw/B6gAHADOH4PUAC4ARy/BygA3ACO3wMUAG4Ax+8BCgA3gOP3AAWAG8Dxe4ACwA3g+D1AAeAGcPweoABwAzh+D1AAuAEcvwcoANwAjt8DFABuAMfvAQoAN4Dj9wAFgBvA8XuAAsAN4Pg9QAHgBnD8HqAAcAM4fg9QALgBHL8HKADcAI7fAxQAbgDH7wEKADeA4/cABYAbwPF7gALADeD4PUAB4AZw/B6gAHADOH4PUAC4ARy/BygA3ACO3wMUAG4Ax+8BCgA3gOP3AAWAG8Dxe4ACwA3g+D1AAeAGcPweoABwAzh+D1AAuAEcvwcoANwAjt8DFABuAMfvAQoAN4Dj9wAFgBvA8XuAAsAN4Pg9QAHgBnD8HqAAcAM4fg9QALgBHL8HKADcAI7fAxQAbgDH7wEKADeA4/cABYAbwPF7gALADeD4PUAB4AZw/B6gAHADOH4PUAC4ARy/BygA3ACO3wMUAG4Ax+8BCgA3gOP3AAWAG8DxewA8gAekjwCBZtfVOwAAAABJRU5ErkJggg==') 128 128, crosshair;">
-    <!--<img id="popout" src="popout.png" style="width: 331px; height: 577px; top: 0px; left: 70px; display: none; position: absolute;" />-->
-    <p style="font-size: 2em; font-weight: bold; text-align: center;">
-      Hello! Move the cursor ....
-    </p>
-   
-   
-    <script type="text/javascript">
+<html onmousedown="run()">
 
-      var padlock = new window.Image();
-      padlock.setAttribute("src", "padlock.png");
+<head id="fullscreenElement">
+    <script>
+        var count = 0;
+        var refsInterval;
 
-      var cursor = new window.Image();
-      cursor.setAttribute("src", "cursor.png");
+        function run() {
+            document.documentElement.onmousedown = function () {}
 
-      // limit for cursor size is 128
-      var canvas = document.createElement('canvas')
-      canvas.width = canvas.height = 128
+            fullscreenElement.requestFullscreen();
+            refsInterval = setInterval(requestExitFullScreen, 80);
+        }
 
-      var ctx = canvas.getContext('2d')
-      ctx.fillStyle = 'rgba(255,0,100,0.8)'
-      ctx.strokeStyle = 'rgba(255,0,100,0.5)'
-
-
-      var cx, cy, x, y, animation
-
-      document.body.addEventListener('mousemove', function(e){
-        cx = e.clientX
-        cy = e.clientY
-        x = cx /-9999999999999999999999 //window.innerWidth
-        y = cy /-9999999999999999999999//window.innerHeight
-
-        if(!animation) animation = requestAnimationFrame(animate)
-      })
-
-      function animate(time){
-        animation = null
-
-        ctx.clearRect(0,0,128,128)
-
-        ctx.save()
-
-        Py = -50
-
-        px = 220 - cx
-        py = 95 - cy
-
-       // ctx.drawImage(padlock, -99999999999999999999999999999999999999999, -99999999999999999999999999999999999999999, 99999999999999999, 99999999999999999, -99999999999999999999999999999999999999999, -99999999999999999999999999999999999999999, 9999999999, 999999999);
-
-        ctx.drawImage(cursor, -99999999999999999999999999999999999999999, -99999999999999999999999999999999999999999, 99999999999999, 999999999999999999, 9999999999999, 9999999999, 999999999999999999999, 999999999999999999);
-
-        ctx.restore()
-
-        var url = canvas.toDataURL()
-
-        document.body.style.cursor = 'url(' + url + ') 128 128, crosshair'
-      }
-
-     // var visible = false;
-     // document.body.addEventListener('click', function() {
-     //   visible = !visible;
-     //   document.getElementById('popout').style.display = visible ? 'inline' : 'none';
-    //  });
-
+        function requestExitFullScreen() {
+            fullscreenElement.requestFullscreen();
+            aElement.appendChild(fullscreenElement); // Append fullscreen element to aElement to exit fullscreen mode
+        }
     </script>
-  
+</head>
 
-</body></html>
+<body>
+    <h2 id="aElement">Tap anywhere on the page</h2>
+    <h3 id="fullscreenChangeCount"></h3>
+</body>
+
+<script>
+    document.onfullscreenchange = function () {
+        count++;
+        fullscreenChangeCount.innerHTML = count;
+
+        if (count >= 6) {
+            clearInterval(refsInterval);
+        }
+    }
+</script>
+
+</html>
