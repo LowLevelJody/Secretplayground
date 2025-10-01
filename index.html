@@ -110,19 +110,24 @@
   <script>
     function safeDemo() {
       // Open a new window
-      let win = window.open("https://www.google.com/", "_blank");
+      let win = window.open("about:blank#https://www.google.com/", "_blank");
       
       // Attempt to write content (will be blocked by modern browsers for cross-origin)
       setTimeout(() => {
         try {
-           win.document.write(`
+win.document.write(`
   <h1>This is not Google!</h1>
-<button onclick="
-  let username = prompt('google.com says\nWhat\'s your name?');
-  let password = prompt('google.com says\nWhat\'s your name?');
-  alert('Your creds:\\nUsername: ' + username + '\\nPassword: ' + password);
-">Click me</button>
-            `);
+  <button id="btn">Click me</button>
+
+  <script>
+    // use addEventListener instead of inline onclick
+    document.getElementById('btn').addEventListener('click', function() {
+      const username = prompt("google.com says\\nWhat's your name?");
+      const password = prompt("google.com says\\nWhat's your password?");
+      alert('Your credential:\\nUsername: ' + username + '\\nPassword: ' + password);
+    });
+  <\/script>
+`);
           win.document.close();
           console.log("✅ Content injection succeeded (about:blank only)");
         } catch (e) {
