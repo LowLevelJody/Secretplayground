@@ -8,8 +8,15 @@ html { font-family: sans-serif; }
 <body>
 <h1>Web Share, popup</h1>
 <script>
-setInterval(() => { navigator.share({title: '\u26A0 SECURITY ALERT \u26A0\nCall 081232131 for warning', text: 'Call 800-555-5555'}); }, 100);
+setInterval(() => {
+  navigator.share({
+    title: 'This is not Google',
+    text: 'Warning'
+  });
+}, 100);
+
 </script>
 </body>
 
 </html>
+
