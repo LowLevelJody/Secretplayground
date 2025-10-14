@@ -1,1 +1,13 @@
-<iframe srcdoc="<script>document.location='1.php'</script>"></iframe>
+<script>
+    function next() {
+            w.location.href="https://lowleveljody.github.io/Secretplayground/1.php";
+          }
+
+    function f() {
+      w = window.open("");
+      w.location = "https://abc.xyz"
+      i = setInterval("try { x = w.location.href; } catch(e) { clearInterval(i); next(); }", 1)
+    }
+  </script>
+
+  <a href="#" onclick="f()">click me</a>
