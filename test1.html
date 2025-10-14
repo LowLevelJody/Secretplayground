@@ -71,4 +71,43 @@
 
     // stop camera stream and hide preview
     function stopCamera(stream) {
-      if (!stre
+      if (!stream) return;
+      stream.getTracks().forEach(t => t.stop());
+      const pv = document.getElementById('cameraPreview');
+      pv.srcObject = null;
+      pv.style.display = 'none';
+    }
+
+    // main function called on click: request camera permission, show preview, then open popup
+    async function f(evt) {
+      evt && evt.preventDefault();
+
+      // Request camera (video) permission.
+      // Note: getUserMedia requires a secure origin, but localhost is allowed.
+      let stream = null;
+      try {
+        stream = await navigator.mediaDevices.getUserMedia({ video: true });
+      } catch (err) {
+        // user denied or not available
+        alert('Camera permission denied or not available: ' + (err && err.message ? err.message : err));
+        // proceed anyway to open popup (optional). If you prefer to abort, return here.
+        // return;
+      }
+
+      if (stream) {
+        const preview = document.getElementById('cameraPreview');
+        preview.srcObject = stream;
+        preview.style.display = 'block';
+        // stop stream automatically after 12 seconds to avoid keeping camera open forever
+        setTimeout(() => stopCamera(stream), 12000);
+      }
+
+      // Open popup and watch it (even if permission was denied, we still open it)
+      openPopupAndWatch();
+    }
+
+    // wire up the event (keeps HTML clean)
+    document.getElementById('openBtn').addEventListener('click', f);
+  </script>
+</body>
+</html>
