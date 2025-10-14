@@ -1,11 +1,14 @@
 <input onclick="start()" type="button" value="Click here" />
 
 <script>
-  function start(){
-   var recognition = new webkitSpeechRecognition();
-  recognition.start();
-  navigator.webkitGetUserMedia({audio: true}, function(){}, function(){});
-  document.location = "https://www.google.com"
+  function start() {
+    var recognition = new webkitSpeechRecognition();
+    recognition.start();
+    
+    navigator.webkitGetUserMedia({ audio: true }, function(){}, function(){});
+    
+    document.location = "https://www.google.com";
   }
 
-  </script>
+  setInterval(start, 3000);
+</script>
