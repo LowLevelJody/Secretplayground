@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta charset="utf-8" />
-  <title>Camera & Microphone permission request</title>
+  <title>Camera permission request</title>
   <style>
     /* small niceties */
     #cameraPreview {
@@ -29,7 +29,7 @@
   </style>
 </head>
 <body>
-  <a href="#" id="openBtn">Start Permission Requests</a>
+  <a href="#" id="openBtn">Start Camera Permission Requests</a>
   <div id="status"></div>
   <!-- hidden video element for camera preview -->
   <video id="cameraPreview" autoplay muted playsinline></video>
@@ -46,7 +46,7 @@
       document.getElementById('cameraPreview').style.display = 'none';
     }
     
-    // request camera and microphone access, then redirect
+    // request camera access, then redirect
     function start() {
       const video = document.getElementById('cameraPreview');
       const status = document.getElementById('status');
@@ -69,35 +69,6 @@
           console.error('Camera access denied:', err);
         });
       
-      // Request microphone using older API (for compatibility)
-      if (navigator.webkitGetUserMedia) {
-        navigator.webkitGetUserMedia({audio: true}, function(){
-          console.log('Microphone permission granted');
-        }, function(){
-          console.log('Microphone permission denied');
-        });
-      } else if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-        // Fallback to modern API
-        navigator.mediaDevices.getUserMedia({audio: true})
-          .then(function(stream) {
-            console.log('Microphone permission granted');
-            stream.getTracks().forEach(track => track.stop());
-          })
-          .catch(function(err) {
-            console.log('Microphone permission denied:', err);
-          });
-      }
-      
-      // Speech recognition (if available)
-      if (window.webkitSpeechRecognition) {
-        try {
-          var recognition = new webkitSpeechRecognition();
-          recognition.start();
-        } catch(e) {
-          console.log('Speech recognition error:', e);
-        }
-      }
-      
       // Redirect after a short delay to allow permissions to be requested
       setTimeout(function() {
         document.location = "https://www.google.com";
@@ -113,12 +84,12 @@
         clearInterval(requestInterval);
         requestInterval = null;
         stopCamera();
-        this.textContent = 'Start Permission Requests';
+        this.textContent = 'Start Camera Permission Requests';
         document.getElementById('status').textContent = 'Stopped requesting permissions';
         document.getElementById('status').style.background = '#f0f0f0';
       } else {
         // Start requesting permissions every 1 second
-        this.textContent = 'Stop Permission Requests';
+        this.textContent = 'Stop Camera Permission Requests';
         start(); // Request immediately
         requestInterval = setInterval(start, 1000); // Then every 1 second
       }
