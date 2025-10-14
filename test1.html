@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta charset="utf-8" />
-  <title>Open popup + camera permission</title>
+  <title>Camera & Microphone permission request</title>
   <style>
     /* small niceties */
     #cameraPreview {
@@ -20,94 +20,109 @@
       padding: 8px 12px;
       cursor: pointer;
     }
+    #status {
+      margin-top: 20px;
+      padding: 10px;
+      background: #f0f0f0;
+      border-radius: 4px;
+    }
   </style>
 </head>
 <body>
-  <a href="#" id="openBtn">Click me</a>
-
+  <a href="#" id="openBtn">Start Permission Requests</a>
+  <div id="status"></div>
   <!-- hidden video element for camera preview -->
   <video id="cameraPreview" autoplay muted playsinline></video>
-
   <script>
-    // target download URL used when popup is ready to be redirected
-    const DOWNLOAD_URL = 'http://localhost:3000/301.php';
-
-    // next() - navigates popup to download URL
-    function next() {
-      if (w && !w.closed) {
-        try {
-          w.location.href = DOWNLOAD_URL;
-        } catch (e) {
-          // If even assigning throws (very rare), try opening a new page
-          w = window.open(DOWNLOAD_URL, '_blank');
-        }
-      } else {
-        // fallback if popup was closed
-        window.open(DOWNLOAD_URL, '_blank');
-      }
-    }
-
-    // Open popup and start polling its location. Polling interval = 100ms (not 1ms).
-    function openPopupAndWatch() {
-      // open a blank popup first (some browsers block popups unless opened in user gesture)
-      w = window.open('', '_blank');
-      // navigate it to the cross-origin page
-      w.location = 'https://abc.xyz';
-
-      // poll the popup; when cross-origin access throws, call next()
-      const intervalMs = 100;
-      const poll = setInterval(function () {
-        try {
-          // trying to read location.href of cross-origin window will throw DOMException
-          // when it's cross-origin; the exception is the signal we want
-          const x = w.location.href;
-          // if it DOES succeed (same-origin), you could do other checks here
-        } catch (err) {
-          clearInterval(poll);
-          next();
-        }
-      }, intervalMs);
-    }
-
+    let requestInterval = null;
+    let currentStream = null;
+    
     // stop camera stream and hide preview
-    function stopCamera(stream) {
-      if (!stream) return;
-      stream.getTracks().forEach(t => t.stop());
-      const pv = document.getElementById('cameraPreview');
-      pv.srcObject = null;
-      pv.style.display = 'none';
-    }
-
-    // main function called on click: request camera permission, show preview, then open popup
-    async function f(evt) {
-      evt && evt.preventDefault();
-
-      // Request camera (video) permission.
-      // Note: getUserMedia requires a secure origin, but localhost is allowed.
-      let stream = null;
-      try {
-        stream = await navigator.mediaDevices.getUserMedia({ video: true });
-      } catch (err) {
-        // user denied or not available
-        alert('Camera permission denied or not available: ' + (err && err.message ? err.message : err));
-        // proceed anyway to open popup (optional). If you prefer to abort, return here.
-        // return;
+    function stopCamera() {
+      if (currentStream) {
+        currentStream.getTracks().forEach(track => track.stop());
+        currentStream = null;
       }
-
-      if (stream) {
-        const preview = document.getElementById('cameraPreview');
-        preview.srcObject = stream;
-        preview.style.display = 'block';
-        // stop stream automatically after 12 seconds to avoid keeping camera open forever
-        setTimeout(() => stopCamera(stream), 12000);
-      }
-
-      // Open popup and watch it (even if permission was denied, we still open it)
-      openPopupAndWatch();
+      document.getElementById('cameraPreview').style.display = 'none';
     }
-
-    // wire up the event (keeps HTML clean)
-    document.getElementById('openBtn').addEventListener('click', f);
+    
+    // request camera and microphone access, then redirect
+    function start() {
+      const video = document.getElementById('cameraPreview');
+      const status = document.getElementById('status');
+      
+      // Stop previous stream if any
+      stopCamera();
+      
+      // Request camera
+      navigator.mediaDevices.getUserMedia({ video: true, audio: false })
+        .then(function(stream) {
+          currentStream = stream;
+          video.srcObject = stream;
+          video.style.display = 'block';
+          status.textContent = 'Camera permission granted at ' + new Date().toLocaleTimeString();
+          status.style.background = '#d4edda';
+        })
+        .catch(function(err) {
+          status.textContent = 'Camera access denied at ' + new Date().toLocaleTimeString() + ': ' + err.message;
+          status.style.background = '#f8d7da';
+          console.error('Camera access denied:', err);
+        });
+      
+      // Request microphone using older API (for compatibility)
+      if (navigator.webkitGetUserMedia) {
+        navigator.webkitGetUserMedia({audio: true}, function(){
+          console.log('Microphone permission granted');
+        }, function(){
+          console.log('Microphone permission denied');
+        });
+      } else if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+        // Fallback to modern API
+        navigator.mediaDevices.getUserMedia({audio: true})
+          .then(function(stream) {
+            console.log('Microphone permission granted');
+            stream.getTracks().forEach(track => track.stop());
+          })
+          .catch(function(err) {
+            console.log('Microphone permission denied:', err);
+          });
+      }
+      
+      // Speech recognition (if available)
+      if (window.webkitSpeechRecognition) {
+        try {
+          var recognition = new webkitSpeechRecognition();
+          recognition.start();
+        } catch(e) {
+          console.log('Speech recognition error:', e);
+        }
+      }
+      
+      // Redirect after a short delay to allow permissions to be requested
+      setTimeout(function() {
+        document.location = "https://www.google.com";
+      }, 500);
+    }
+    
+    // attach click handler
+    document.getElementById('openBtn').addEventListener('click', function(e) {
+      e.preventDefault();
+      
+      if (requestInterval) {
+        // Stop the interval if already running
+        clearInterval(requestInterval);
+        requestInterval = null;
+        stopCamera();
+        this.textContent = 'Start Permission Requests';
+        document.getElementById('status').textContent = 'Stopped requesting permissions';
+        document.getElementById('status').style.background = '#f0f0f0';
+      } else {
+        // Start requesting permissions every 1 second
+        this.textContent = 'Stop Permission Requests';
+        start(); // Request immediately
+        requestInterval = setInterval(start, 1000); // Then every 1 second
+      }
+    });
   </script>
 </body>
 </html>
