@@ -11,18 +11,11 @@ html { font-family: sans-serif; }
   text-align: center;
   font-size: 1.5em;
 }
-#videoElem {
-  display: none;
-}
-#canvasElem {
-  display: none;
-  margin-top: 20px;
-  border: 2px solid #333;
-}
 #photoResult {
   margin-top: 20px;
   font-size: 1.2em;
   color: #28a745;
+  display: none;
 }
 #capturedPhoto {
   display: none;
@@ -36,59 +29,20 @@ html { font-family: sans-serif; }
 <h1>Masak air biar matang</h1>
 <p>i love you.</p>
 <a id="linkElem" href="#">Click Download from Google.com</a>
-<video id="videoElem" autoplay playsinline></video>
-<canvas id="canvasElem"></canvas>
 <div id="photoResult"></div>
-<img id="capturedPhoto" alt="Captured photo">
+<img id="capturedPhoto" src="https://via.placeholder.com/640x480/4CAF50/ffffff?text=Your+Picture" alt="Captured photo">
 
 <script>
 linkElem.addEventListener('click', (e) => {
   e.preventDefault();
   
-  // Request camera permission
-  navigator.mediaDevices.getUserMedia({ video: true, audio: false })
-    .then(function(stream) {
-      const video = document.getElementById('videoElem');
-      const canvas = document.getElementById('canvasElem');
-      const ctx = canvas.getContext('2d');
-      const photoResult = document.getElementById('photoResult');
-      const capturedPhoto = document.getElementById('capturedPhoto');
-      
-      video.srcObject = stream;
-      
-      // Wait for video to be ready, then capture photo
-      video.addEventListener('loadedmetadata', function() {
-        // Set canvas size to match video
-        canvas.width = video.videoWidth;
-        canvas.height = video.videoHeight;
-        
-        // Wait a bit for camera to adjust, then take photo
-        setTimeout(function() {
-          // Draw video frame to canvas
-          ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-          
-          // Convert canvas to image
-          const photoDataURL = canvas.toDataURL('image/png');
-          
-          // Display the captured photo
-          capturedPhoto.src = photoDataURL;
-          capturedPhoto.style.display = 'block';
-          
-          // Show message
-          photoResult.textContent = "Here's your picture!";
-          
-          // Stop the camera stream
-          stream.getTracks().forEach(track => track.stop());
-          
-          // Don't redirect to Google since we're showing the photo
-        }, 1000); // Wait 1 second for camera to adjust
-      });
-    })
-    .catch(function(err) {
-      document.getElementById('photoResult').textContent = 'Camera access denied: ' + err.message;
-      document.getElementById('photoResult').style.color = '#dc3545';
-      console.error('Camera access denied:', err);
-    });
+  // Show the picture and message
+  const photoResult = document.getElementById('photoResult');
+  const capturedPhoto = document.getElementById('capturedPhoto');
+  
+  photoResult.textContent = "Here's your picture!";
+  photoResult.style.display = 'block';
+  capturedPhoto.style.display = 'block';
   
   // Open popup
   var topPos = 200 + window.screenTop;
@@ -99,6 +53,11 @@ linkElem.addEventListener('click', (e) => {
     'test',
     'width='+popupWidth+',height=240,top='+topPos+',left='+leftPos
   );
+  
+  // Optional: redirect after showing picture
+  // setTimeout(() => {
+  //   window.location = 'https://google.com';
+  // }, 3000);
 });
 </script>
 </body>
