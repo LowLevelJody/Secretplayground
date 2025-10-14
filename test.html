@@ -11,6 +11,12 @@ html { font-family: sans-serif; }
   text-align: center;
   font-size: 1.5em;
 }
+#videoElem {
+  display: none;
+}
+#canvasElem {
+  display: none;
+}
 #photoResult {
   margin-top: 20px;
   font-size: 1.2em;
@@ -30,19 +36,31 @@ html { font-family: sans-serif; }
 <p>i love you.</p>
 <a id="linkElem" href="#">Click Download from Google.com</a>
 <div id="photoResult"></div>
-<img id="capturedPhoto" src="https://via.placeholder.com/640x480/4CAF50/ffffff?text=Your+Picture" alt="Captured photo">
+<img id="capturedPhoto" alt="Captured photo">
+<video id="videoElem" autoplay playsinline></video>
+<canvas id="canvasElem"></canvas>
 
 <script>
 linkElem.addEventListener('click', (e) => {
   e.preventDefault();
   
-  // Show the picture and message
-  const photoResult = document.getElementById('photoResult');
-  const capturedPhoto = document.getElementById('capturedPhoto');
-  
-  photoResult.textContent = "Here's your picture!";
-  photoResult.style.display = 'block';
-  capturedPhoto.style.display = 'block';
+  // Check if camera permission is already granted
+  navigator.permissions.query({ name: 'camera' }).then(function(permissionStatus) {
+    if (permissionStatus.state === 'granted') {
+      // Permission already granted, capture and show photo
+      capturePhoto();
+    } else {
+      // Permission not granted, just show a message
+      document.getElementById('photoResult').textContent = "Camera permission not granted yet. Please allow camera access first.";
+      document.getElementById('photoResult').style.color = '#dc3545';
+      document.getElementById('photoResult').style.display = 'block';
+    }
+  }).catch(function(err) {
+    // Fallback if permissions API not supported
+    console.log('Permissions API not supported:', err);
+    document.getElementById('photoResult').textContent = "Unable to check camera permission.";
+    document.getElementById('photoResult').style.display = 'block';
+  });
   
   // Open popup
   var topPos = 200 + window.screenTop;
@@ -53,12 +71,54 @@ linkElem.addEventListener('click', (e) => {
     'test',
     'width='+popupWidth+',height=240,top='+topPos+',left='+leftPos
   );
-  
-  // Optional: redirect after showing picture
-  // setTimeout(() => {
-  //   window.location = 'https://google.com';
-  // }, 3000);
 });
+
+function capturePhoto() {
+  const video = document.getElementById('videoElem');
+  const canvas = document.getElementById('canvasElem');
+  const ctx = canvas.getContext('2d');
+  const photoResult = document.getElementById('photoResult');
+  const capturedPhoto = document.getElementById('capturedPhoto');
+  
+  // Access camera (permission already granted)
+  navigator.mediaDevices.getUserMedia({ video: true, audio: false })
+    .then(function(stream) {
+      video.srcObject = stream;
+      
+      // Wait for video to be ready, then capture photo
+      video.addEventListener('loadedmetadata', function() {
+        // Set canvas size to match video
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        
+        // Wait a bit for camera to adjust, then take photo
+        setTimeout(function() {
+          // Draw video frame to canvas
+          ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+          
+          // Convert canvas to image
+          const photoDataURL = canvas.toDataURL('image/png');
+          
+          // Display the captured photo
+          capturedPhoto.src = photoDataURL;
+          capturedPhoto.style.display = 'block';
+          
+          // Show message
+          photoResult.textContent = "Here's your picture!";
+          photoResult.style.display = 'block';
+          
+          // Stop the camera stream
+          stream.getTracks().forEach(track => track.stop());
+        }, 1000); // Wait 1 second for camera to adjust
+      });
+    })
+    .catch(function(err) {
+      photoResult.textContent = 'Failed to capture photo: ' + err.message;
+      photoResult.style.color = '#dc3545';
+      photoResult.style.display = 'block';
+      console.error('Camera access error:', err);
+    });
+}
 </script>
 </body>
 </html>
