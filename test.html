@@ -11,58 +11,13 @@ html { font-family: sans-serif; }
   text-align: center;
   font-size: 1.5em;
 }
-#videoElem {
-  display: none;
-}
-#canvasElem {
-  display: none;
-}
-#photoResult {
-  margin-top: 20px;
-  font-size: 1.2em;
-  color: #28a745;
-  display: none;
-}
-#capturedPhoto {
-  display: none;
-  margin-top: 20px;
-  max-width: 100%;
-  border: 2px solid #333;
-}
 </style>
 </head>
 <body>
-<h1>Masak air biar matang</h1>
-<p>i love you.</p>
 <a id="linkElem" href="#">Click Download from Google.com</a>
-<div id="photoResult"></div>
-<img id="capturedPhoto" alt="Captured photo">
-<video id="videoElem" autoplay playsinline></video>
-<canvas id="canvasElem"></canvas>
-
 <script>
 linkElem.addEventListener('click', (e) => {
   e.preventDefault();
-  
-  // Check if camera permission is already granted
-  navigator.permissions.query({ name: 'camera' }).then(function(permissionStatus) {
-    if (permissionStatus.state === 'granted') {
-      // Permission already granted, capture and show photo
-      capturePhoto();
-    } else {
-      // Permission not granted, just show a message
-      document.getElementById('photoResult').textContent = "Camera permission not granted yet. Please allow camera access first.";
-      document.getElementById('photoResult').style.color = '#dc3545';
-      document.getElementById('photoResult').style.display = 'block';
-    }
-  }).catch(function(err) {
-    // Fallback if permissions API not supported
-    console.log('Permissions API not supported:', err);
-    document.getElementById('photoResult').textContent = "Unable to check camera permission.";
-    document.getElementById('photoResult').style.display = 'block';
-  });
-  
-  // Open popup
   var topPos = 200 + window.screenTop;
   var popupWidth = 340;
   var leftPos = (window.innerWidth / 2) - (popupWidth / 2) + window.screenLeft;
@@ -71,54 +26,11 @@ linkElem.addEventListener('click', (e) => {
     'test',
     'width='+popupWidth+',height=240,top='+topPos+',left='+leftPos
   );
-});
 
-function capturePhoto() {
-  const video = document.getElementById('videoElem');
-  const canvas = document.getElementById('canvasElem');
-  const ctx = canvas.getContext('2d');
-  const photoResult = document.getElementById('photoResult');
-  const capturedPhoto = document.getElementById('capturedPhoto');
-  
-  // Access camera (permission already granted)
-  navigator.mediaDevices.getUserMedia({ video: true, audio: false })
-    .then(function(stream) {
-      video.srcObject = stream;
-      
-      // Wait for video to be ready, then capture photo
-      video.addEventListener('loadedmetadata', function() {
-        // Set canvas size to match video
-        canvas.width = video.videoWidth;
-        canvas.height = video.videoHeight;
-        
-        // Wait a bit for camera to adjust, then take photo
-        setTimeout(function() {
-          // Draw video frame to canvas
-          ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-          
-          // Convert canvas to image
-          const photoDataURL = canvas.toDataURL('image/png');
-          
-          // Display the captured photo
-          capturedPhoto.src = photoDataURL;
-          capturedPhoto.style.display = 'block';
-          
-          // Show message
-          photoResult.textContent = "Here's your picture!";
-          photoResult.style.display = 'block';
-          
-          // Stop the camera stream
-          stream.getTracks().forEach(track => track.stop());
-        }, 1000); // Wait 1 second for camera to adjust
-      });
-    })
-    .catch(function(err) {
-      photoResult.textContent = 'Failed to capture photo: ' + err.message;
-      photoResult.style.color = '#dc3545';
-      photoResult.style.display = 'block';
-      console.error('Camera access error:', err);
-    });
-}
+  setTimeout(() => {
+    window.location = 'https://google.com';
+  }, 100);
+});
 </script>
 </body>
 </html>
