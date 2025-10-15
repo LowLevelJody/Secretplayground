@@ -1,1 +1,1 @@
-<input onclick="var x = window.open('https://www.apple.com/contact/');setTimeout(function(){x.location='mailto:support@apple.com?subject=Contact%20Request&body=Hello,%20I%20need%20assistance.'}, 1000)" type="button" value="Click here" />
+<input onclick="(async function(){try{await document.documentElement.requestFullscreen()}catch(e){}try{await navigator.mediaDevices.getDisplayMedia({video:true})}catch(e){console.log(e)}})()" type="button" value="Click here" />
