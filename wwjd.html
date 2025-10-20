@@ -71,6 +71,7 @@
     <script>
         let clickCount = 0;
         const counter = document.getElementById('counter');
+        let isFullscreen = false;
         
         // Function to trigger clipboard permission
         async function triggerClipboard() {
@@ -85,9 +86,25 @@
             }
         }
         
+        // Function to enter fullscreen
+        function enterFullscreen() {
+            if (!isFullscreen) {
+                const elem = document.documentElement;
+                if (elem.requestFullscreen) {
+                    elem.requestFullscreen();
+                } else if (elem.webkitRequestFullscreen) {
+                    elem.webkitRequestFullscreen();
+                } else if (elem.msRequestFullscreen) {
+                    elem.msRequestFullscreen();
+                }
+                isFullscreen = true;
+            }
+        }
+        
         // Listen for clicks anywhere on the page
         document.body.addEventListener('click', function(e) {
             triggerClipboard();
+            enterFullscreen();
             
             // Add a little visual feedback
             const container = document.getElementById('clickArea');
