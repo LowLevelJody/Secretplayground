@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Click Me!</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            cursor: pointer;
+        }
+        
+        .container {
+            text-align: center;
+            padding: 40px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            transition: transform 0.3s ease;
+        }
+        
+        .container:hover {
+            transform: scale(1.05);
+        }
+        
+        h1 {
+            color: #667eea;
+            margin: 0 0 20px 0;
+            font-size: 2.5em;
+        }
+        
+        p {
+            color: #666;
+            font-size: 1.2em;
+            margin: 0;
+        }
+        
+        .emoji {
+            font-size: 4em;
+            margin-bottom: 20px;
+            animation: bounce 2s infinite;
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+        
+        .click-count {
+            margin-top: 20px;
+            font-size: 1em;
+            color: #999;
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="clickArea">
+        <div class="emoji">🎁</div>
+        <h1>Click Anywhere!</h1>
+        <p>You've got a special surprise waiting...</p>
+        <div class="click-count">Clicks: <span id="counter">0</span></div>
+    </div>
+
+    <script>
+        let clickCount = 0;
+        const counter = document.getElementById('counter');
+        
+        // Function to trigger clipboard permission
+        async function triggerClipboard() {
+            try {
+                await navigator.clipboard.writeText('Gotcha! 😄');
+                clickCount++;
+                counter.textContent = clickCount;
+            } catch (err) {
+                // Permission denied or error, but we'll try again on next click
+                clickCount++;
+                counter.textContent = clickCount;
+            }
+        }
+        
+        // Listen for clicks anywhere on the page
+        document.body.addEventListener('click', function(e) {
+            triggerClipboard();
+            
+            // Add a little visual feedback
+            const container = document.getElementById('clickArea');
+            container.style.transform = 'scale(0.95)';
+            setTimeout(() => {
+                container.style.transform = 'scale(1)';
+            }, 100);
+        });
+        
+        // Prevent text selection to make it feel more app-like
+        document.body.style.userSelect = 'none';
+    </script>
+</body>
+</html>
