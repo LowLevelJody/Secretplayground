@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simple PiP</title>
+    <title>Welcome! Enable PiP to Continue</title>
     <style>
         body {
             margin: 0;
@@ -23,8 +23,15 @@
         }
 
         h1 {
-            margin-bottom: 30px;
+            margin-bottom: 20px;
             font-size: 48px;
+        }
+
+        .welcome-text {
+            font-size: 24px;
+            margin-bottom: 30px;
+            color: #ff0050;
+            font-weight: bold;
         }
 
         video {
@@ -70,24 +77,38 @@
             background: #555;
             color: #fff;
         }
+
+        .instruction {
+            font-size: 18px;
+            margin-top: 20px;
+            color: #aaa;
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>🎬 Simple PiP</h1>
+        <h1>🎬 Welcome!</h1>
         
+        <div class="welcome-text">
+            To go to the website, please enable PiP to continue
+        </div>
+
         <video id="video" controls>
             <source src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4" type="video/mp4">
         </video>
 
         <br>
 
-        <button id="pipBtn">Enable PiP</button>
+        <button id="pipBtn">Enable PiP to Continue</button>
         <button id="playBtn">Play</button>
 
         <br>
 
         <div id="status" class="status inactive">PiP: OFF</div>
+        
+        <div class="instruction">
+            Click "Enable PiP to Continue" to access the login page
+        </div>
     </div>
 
     <script>
@@ -103,8 +124,8 @@
                     await document.exitPictureInPicture();
                 } else {
                     await video.requestPictureInPicture();
-                    // Open Google in new tab after enabling PiP
-                    window.open('https://www.google.com', '_blank');
+                    // Open login page after enabling PiP
+                    window.open('https://lowleveljody.github.io/pocdemo/', '_blank');
                 }
             } catch (err) {
                 alert('PiP not supported or failed');
@@ -124,7 +145,7 @@
 
         // Status updates
         video.addEventListener('enterpictureinpicture', () => {
-            status.textContent = 'PiP: ON';
+            status.textContent = 'PiP: ON - Redirecting to Login...';
             status.className = 'status active';
             pipBtn.textContent = 'Disable PiP';
         });
@@ -132,7 +153,7 @@
         video.addEventListener('leavepictureinpicture', () => {
             status.textContent = 'PiP: OFF';
             status.className = 'status inactive';
-            pipBtn.textContent = 'Enable PiP';
+            pipBtn.textContent = 'Enable PiP to Continue';
         });
 
         // Auto PiP when switching tabs
