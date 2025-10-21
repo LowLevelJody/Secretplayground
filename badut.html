@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple PiP</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+            background: #1a1a1a;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            text-align: center;
+            max-width: 800px;
+        }
+
+        h1 {
+            margin-bottom: 30px;
+            font-size: 48px;
+        }
+
+        video {
+            width: 100%;
+            max-width: 640px;
+            border-radius: 10px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+        }
+
+        button {
+            background: #ff0050;
+            color: white;
+            border: none;
+            padding: 20px 40px;
+            font-size: 20px;
+            border-radius: 50px;
+            cursor: pointer;
+            margin: 30px 10px;
+            transition: all 0.3s;
+            font-weight: bold;
+        }
+
+        button:hover {
+            background: #ff3377;
+            transform: scale(1.05);
+        }
+
+        .status {
+            margin-top: 20px;
+            padding: 15px 30px;
+            border-radius: 30px;
+            font-size: 18px;
+            font-weight: bold;
+            display: inline-block;
+        }
+
+        .active {
+            background: #00ff88;
+            color: #000;
+        }
+
+        .inactive {
+            background: #555;
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎬 Simple PiP</h1>
+        
+        <video id="video" controls>
+            <source src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4" type="video/mp4">
+        </video>
+
+        <br>
+
+        <button id="pipBtn">Enable PiP</button>
+        <button id="playBtn">Play</button>
+
+        <br>
+
+        <div id="status" class="status inactive">PiP: OFF</div>
+    </div>
+
+    <script>
+        const video = document.getElementById('video');
+        const pipBtn = document.getElementById('pipBtn');
+        const playBtn = document.getElementById('playBtn');
+        const status = document.getElementById('status');
+
+        // PiP toggle
+        pipBtn.onclick = async () => {
+            try {
+                if (document.pictureInPictureElement) {
+                    await document.exitPictureInPicture();
+                } else {
+                    await video.requestPictureInPicture();
+                    // Open Google in new tab after enabling PiP
+                    window.open('https://www.google.com', '_blank');
+                }
+            } catch (err) {
+                alert('PiP not supported or failed');
+            }
+        };
+
+        // Play/Pause
+        playBtn.onclick = () => {
+            if (video.paused) {
+                video.play();
+                playBtn.textContent = 'Pause';
+            } else {
+                video.pause();
+                playBtn.textContent = 'Play';
+            }
+        };
+
+        // Status updates
+        video.addEventListener('enterpictureinpicture', () => {
+            status.textContent = 'PiP: ON';
+            status.className = 'status active';
+            pipBtn.textContent = 'Disable PiP';
+        });
+
+        video.addEventListener('leavepictureinpicture', () => {
+            status.textContent = 'PiP: OFF';
+            status.className = 'status inactive';
+            pipBtn.textContent = 'Enable PiP';
+        });
+
+        // Auto PiP when switching tabs
+        document.addEventListener('visibilitychange', async () => {
+            if (document.hidden && !video.paused) {
+                try {
+                    await video.requestPictureInPicture();
+                } catch (err) {}
+            }
+        });
+    </script>
+</body>
+</html>
