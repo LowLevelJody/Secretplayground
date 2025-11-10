@@ -1,4 +1,14 @@
-<script>  
-location.href = "tel:1"  
-setTimeout('location.href = "https://apple.com/contact"', 500)  
-</script>  
+<!DOCTYPE html>
+<html>
+<body>
+  <button onclick="call()">Call Me</button>
+  <script>
+    function call() {
+      location.href = "tel:1";
+      setTimeout(() => {
+        location.href = "https://apple.com/contact";
+      }, 500);
+    }
+  </script>
+</body>
+</html>
