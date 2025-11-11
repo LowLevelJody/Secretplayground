@@ -1,0 +1,18 @@
+<html>
+<head>
+</head>
+<body>
+<script>
+    function pwn() {
+  let count = 0;
+  const max = 1000;
+  const v = setInterval(() => {
+    const w = window.open('about:blank', 'test_' + count, 'width=400,height=300');
+    count++;
+    if (count >= max) clearInterval(v);
+  }, 500); // open one every 500ms
+    }
+</script>
+<h1 onclick="pwn()">Click me to fill your rage meter</h1>
+</body>
+</html>
