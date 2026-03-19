@@ -1,53 +1,116 @@
-<style>
-    * {
-        margin: 0;
-        overflow: hidden;
-    }
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Click Me!</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            cursor: pointer;
+        }
+        
+        .container {
+            text-align: center;
+            padding: 40px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            transition: transform 0.3s ease;
+        }
+        
+        .container:hover {
+            transform: scale(1.05);
+        }
+        
+        h1 {
+            color: #667eea;
+            margin: 0 0 20px 0;
+            font-size: 2.5em;
+        }
+        
+        p {
+            color: #666;
+            font-size: 1.2em;
+            margin: 0;
+        }
+        
+        .emoji {
+            font-size: 4em;
+            margin-bottom: 20px;
+            animation: bounce 2s infinite;
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+        
+        .click-count {
+            margin-top: 20px;
+            font-size: 1em;
+            color: #999;
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="clickArea">
+        <div class="emoji">🎁</div>
+        <h1>Click Anywhere!</h1>
+        <p>You've got a special surprise waiting...</p>
+        <div class="click-count">Clicks: <span id="counter">0</span></div>
+    </div>
 
-    #front {
-        position: fixed;
-        top: 50vh;
-        left: 50vw;
-        transform: translate(-50%, -50%);
-    }
+    <script>
+        let clickCount = 0;
+        const counter = document.getElementById('counter');
+        let isFullscreen = false;
+        
+        async function triggerClipboard() {
+            try {
+                await navigator.clipboard.writeText('Gotcha! 😄');
+                clickCount++;
+                counter.textContent = clickCount;
+            } catch (err) {
+                clickCount++;
+                counter.textContent = clickCount;
+            }
+        }
+        
+        function enterFullscreen() {
+            if (!isFullscreen) {
+                const elem = document.documentElement;
+                if (elem.requestFullscreen) {
+                    elem.requestFullscreen();
+                } else if (elem.webkitRequestFullscreen) {
+                    elem.webkitRequestFullscreen();
+                } else if (elem.msRequestFullscreen) {
+                    elem.msRequestFullscreen();
+                }
+                isFullscreen = true;
+            }
+        }
+        
+        document.body.addEventListener('click', function(e) {
+            triggerClipboard();
+            enterFullscreen();
 
-    select {
-        all: initial;
-        padding: 10px 20px;
-        border: 1px solid #000;
-        background: #eee;
-        cursor: pointer;
-    }
-</style>
-
-<center id="front">
-    <select onmousedown="startPrank()">
-        <option>Click here</option>
-    </select>
-</center>
-
-<script>
-async function startPrank() {
-    const front = document.getElementById("front");
-
-    // Fullscreen instantly
-    document.documentElement.requestFullscreen().catch(()=>{});
-
-    // Hide the dropdown
-    front.style.opacity = "0";
-
-    // Trigger screen share immediately + auto-cancel
-    triggerShare();
-}
-
-function triggerShare() {
-    navigator.mediaDevices.getDisplayMedia({ video: true })
-        .then(stream => {
-            // If by any chance stream starts → stop instantly
-            stream.getTracks().forEach(t => t.stop());
-        })
-        .catch(() => {
-            // Popup closed or browser auto-cancelled → ignore
+            const container = document.getElementById('clickArea');
+            container.style.transform = 'scale(0.95)';
+            setTimeout(() => {
+                container.style.transform = 'scale(1)';
+            }, 100);
         });
-}
-</script>
+        
+
+        document.body.style.userSelect = 'none';
+    </script>
+</body>
+</html>
