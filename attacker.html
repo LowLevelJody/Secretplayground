@@ -1,30 +1,18 @@
 
 <!doctype html>
 <meta charset="utf-8">
-<title>select permission overlap</title>
-<select id="s" size="12">
-  <option>login.microsoftonline.com</option>
-  <option>Allow</option>
-  <option>Block</option>
-  <option>Camera</option>
-  <option>Location</option>
-  <option>Microphone</option>
-  <option>Trusted prompt</option>
-</select>
-<br>
-<button id="geo">focus select then geolocation</button>
-<button id="cam">focus select then camera</button>
-<pre id="out"></pre>
+<title>android minibar keyboard</title>
+<p>Edge Android manual: scroll until toolbar hides, tap textarea, inspect minibar/address surface.</p>
+<button id="down">scroll down</button>
+<br><br><br><br><br><br><br><br><br><br>
+<br><br><br><br><br><br><br><br><br><br>
+<br><br><br><br><br><br><br><br><br><br>
+<br><br><br><br><br><br><br><br><br><br>
+<br><br><br><br><br><br><br><br><br><br>
+<br><br><br><br><br><br><br><br><br><br>
+<textarea id="t" rows="4" cols="30">tap here</textarea>
+<button id="nav">navigate google</button>
 <script>
-geo.onclick = () => {
-  s.focus();
-  setTimeout(() => navigator.geolocation.getCurrentPosition(() => out.textContent = "geo ok", e => out.textContent = e.message), 200);
-};
-cam.onclick = async () => {
-  s.focus();
-  setTimeout(async () => {
-    const stream = await navigator.mediaDevices.getUserMedia({ video: true }).catch(e => (out.textContent = e.message, null));
-    if (stream) for (const t of stream.getTracks()) t.stop();
-  }, 200);
-};
+down.onclick = () => scrollTo(0, document.body.scrollHeight);
+nav.onclick = () => location.href = "https://www.google.com/";
 </script>
